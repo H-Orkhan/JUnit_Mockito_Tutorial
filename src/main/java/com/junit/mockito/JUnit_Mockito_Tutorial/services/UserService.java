@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -21,13 +22,18 @@ public class UserService {
     }
 
     public User getUserByID(int id) {
-        return repository.findById(id).orElseThrow();
+        return repository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
-    public User addUser(User user) {
-        return repository.save(user);
+    public User addUser(User user)  {
+        if (!checkIfExists(user)) return repository.save(user);
+        throw new IllegalAccessError("User Is already exists");
     }
 
     public void deleteUser(User user) { repository.delete(user);
+    }
+
+    public boolean checkIfExists (User user) {
+        return getAllUsers().contains(user);
     }
 }
